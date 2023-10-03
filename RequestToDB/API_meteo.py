@@ -12,3 +12,4 @@ with closing(urlopen('https://api.meteo-concept.com/api/forecast/daily/0?token=7
     (city,forecast) = (decoded[k] for k in ('city','forecast'))
 
     print(u"Aujourd'hui à {}, on prévoit {}mm (pas plus de {}mm en tous cas) de précipitations.".format(city['name'], forecast['rr10'], forecast['rr1']))
+    print(u"il y a une probabilité de pleuvoir de {} % et de neigé de {} %".format(forecast['probarain'],forecast['probafrost']))
