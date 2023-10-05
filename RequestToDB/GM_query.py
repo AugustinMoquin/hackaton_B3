@@ -11,6 +11,7 @@ search_text = str(input())
 CityName = "Paris"
 
 url = f'https://api.openrouteservice.org/geocode/search?api_key={API_KEY}&text={search_text},{CityName}'
+print(url)
 response = requests.get(url)
 data = response.json()  
 
