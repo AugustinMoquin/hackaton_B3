@@ -13,15 +13,11 @@
     </header>
 
     <?php
-
-    // Acces au .env pour la clé d'api 
     $env = parse_ini_file('.env');
     $API = $API["API_KEY"];
-    echo $API;
 
-    //
     $mapVisible = false; // Variable pour contrôler la visibilité de la carte
-
+    $map1Visible = true;
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $search_text = $_POST['Destination'];
         $encoded_search_text = urlencode($search_text);
@@ -59,8 +55,6 @@
         $end = "{$longitude},{$latitude}"; // Coordonnées de destination
 
         $call = file_get_contents("https://api.openrouteservice.org/v2/directions/cycling-road?api_key={$API}&start={$start}&end={$end}&instructions=true", false, stream_context_create(['http' => ['header' => $headers]]));
-        
-        // TEST
         //echo $call;
         
         // Imprime le résultat si erreur 
@@ -77,7 +71,6 @@ for ($i = 0; $i < count($routeCoordinates); $i++) {
     $temp = $routeCoordinates[$i][0]; // Stocke la longitude temporairement
     $routeCoordinates[$i][0] = $routeCoordinates[$i][1]; // Remplace la longitude par la latitude
     $routeCoordinates[$i][1] = $temp; // Remplace la latitude par la longitude
-    
 }
         $segments = $dataRoute['features'][0]['properties']['segments'];
 
@@ -97,17 +90,37 @@ if (isset($segments) && !empty($segments)) {
 
         // Affiche la carte
         $mapVisible = true;
-        
+        $map1Visible= false;
     }
     
     ?>
+        <?php if ($map1Visible) { 
+        
+    ?>
+    
+        <!-- Créer un conteneur pour la carte -->
+    <div id="map" style="height: 100vh; widht:100vw; z-index:0" class ="removable"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+     
+        var map = L.map('map').setView([48.8566, 2.3522], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        </script>
+     <?php } ?>
     
     <!-- Afficher la carte si le formulaire a été soumis -->
-    <?php if ($mapVisible) { ?>
-        <div id="map" style="width: 100%; height: 800px; position: absolute; outline: none;z-index: 1;"></div>
+    <?php if ($mapVisible) { 
+        
+    ?>
+
+        <div id="map2" style="width: 100%; height: 800px; position: absolute; outline: none;z-index: 1;"></div>
         <script>
             // Créez une carte Leaflet centrée sur le trajet
-            var map = L.map('map').setView([<?php echo ($latitude + $latitude2) / 2; ?>, <?php echo ($longitude + $longitude2) / 2; ?>], 10);
+            var map = L.map('map2').setView([<?php echo ($latitude + $latitude2) / 2; ?>, <?php echo ($longitude + $longitude2) / 2; ?>], 10);
 
             // Ajoutez une couche de carte OpenStreetMap
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
